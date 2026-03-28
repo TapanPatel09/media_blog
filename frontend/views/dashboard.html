@@ -1,0 +1,57 @@
+<div class="max-w-4xl mx-auto">
+    <div class="flex items-center justify-between mb-8 pb-6 border-b border-gray-100">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900">My Dashboard</h1>
+            <p class="mt-2 text-sm text-gray-500">Manage your published blog posts.</p>
+        </div>
+        <a href="#!/create-blog" class="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-all shadow-sm hover:shadow">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            New Blog
+        </a>
+    </div>
+
+    <!-- Loading State -->
+    <div ng-if="loading" class="flex justify-center py-10">
+        <svg class="animate-spin h-8 w-8 text-brand-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+    </div>
+
+    <!-- Empty State -->
+    <div ng-if="!loading && blogs.length === 0" class="text-center py-16 bg-white rounded-xl shadow-sm border border-gray-100">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10l4 4v10a2 2 0 01-2 2z"></path>
+        </svg>
+        <h3 class="mt-2 text-sm font-medium text-gray-900">No blogs published yet</h3>
+        <p class="mt-1 text-sm text-gray-500 mb-6">Get started by creating your first blog post.</p>
+        <a href="#!/create-blog" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-brand-700 bg-brand-50 hover:bg-brand-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500">
+            Create Blog
+        </a>
+    </div>
+
+    <!-- Blog List -->
+    <div ng-show="!loading && blogs.length > 0" class="space-y-4">
+        <div ng-repeat="blog in blogs" class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:shadow transition-shadow">
+            <div class="flex-grow">
+                <a href="#!/blog/{{blog._id}}" class="text-xl font-bold text-gray-900 hover:text-brand-600 transition-colors">{{ blog.title }}</a>
+                <div class="flex items-center gap-3 mt-2 text-sm text-gray-500">
+                    <span>Published: {{ blog.createdAt | date:'mediumDate' }}</span>
+                    <span>&bull;</span>
+                    <span class="flex items-center gap-1">
+                        <svg class="h-4 w-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" /></svg>
+                        {{ blog.likes.length }}
+                    </span>
+                </div>
+            </div>
+            <div class="flex shrink-0 items-center justify-start gap-3 mt-4 sm:mt-0 pt-4 sm:pt-0 border-t sm:border-t-0 border-gray-100">
+                <a href="#!/edit-blog/{{blog._id}}" class="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-sm font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500">
+                    Edit
+                </a>
+                <button ng-click="deleteBlog(blog._id)" class="inline-flex items-center px-3 py-1.5 border border-transparent shadow-sm text-sm font-medium rounded text-red-700 bg-red-50 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                    Delete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

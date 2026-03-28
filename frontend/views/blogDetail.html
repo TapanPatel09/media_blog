@@ -1,0 +1,93 @@
+<div class="max-w-3xl mx-auto py-8">
+    <div class="mb-6 pb-6 border-b border-gray-100">
+        <a href="#!/" class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 mb-8 transition-colors">
+            <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            Back to Home
+        </a>
+
+        <!-- Loading State -->
+        <div ng-if="loading" class="flex justify-center py-10">
+            <svg class="animate-spin h-8 w-8 text-brand-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+        </div>
+
+        <!-- Blog Header -->
+        <article ng-if="!loading && blog" class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+            <h1 class="text-4xl font-extrabold text-gray-900 tracking-tight leading-tight mb-6">{{ blog.title }}</h1>
+            
+            <div class="flex items-center justify-between shadow-sm p-4 rounded-xl bg-gray-50 mb-8">
+                <div class="flex items-center gap-4">
+                    <div class="h-12 w-12 rounded-full bg-brand-100 flex items-center justify-center text-brand-700 font-bold text-lg">
+                        {{ blog.author.name.charAt(0).toUpperCase() }}
+                    </div>
+                    <div>
+                        <p class="text-base font-medium text-gray-900">{{ blog.author.name }}</p>
+                        <p class="text-sm text-gray-500">{{ blog.createdAt | date:'longDate' }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Blog Content -->
+            <div class="prose max-w-none text-gray-800 text-lg leading-relaxed whitespace-pre-wrap font-serif">
+                {{ blog.content }}
+            </div>
+
+            <!-- Like Section -->
+            <div class="mt-10 pt-6 border-t border-gray-100 flex items-center gap-4">
+                <button ng-click="toggleLike()" class="flex items-center gap-2 px-4 py-2 rounded-full border transition-all" ng-class="isLikedByMe ? 'bg-rose-50 border-rose-200 text-rose-600' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'">
+                    <svg class="h-5 w-5" ng-class="isLikedByMe ? 'text-rose-500' : 'text-gray-400'" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" /></svg>
+                    <span class="font-medium">{{ blog.likes.length }} {{ blog.likes.length === 1 ? 'Like' : 'Likes' }}</span>
+                </button>
+            </div>
+        </article>
+    </div>
+
+    <!-- Comments Section -->
+    <div ng-if="!loading && blog" class="mt-8 bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+        <h3 class="text-2xl font-bold text-gray-900 mb-6">Responses ({{comments.length}})</h3>
+
+        <!-- Add Comment Form -->
+        <div ng-if="isAuthenticated" class="mb-10 flex gap-4 items-start">
+            <div class="h-10 w-10 shrink-0 rounded-full bg-brand-600 flex items-center justify-center text-white font-bold">
+                {{ currentUser.name.charAt(0).toUpperCase() }}
+            </div>
+            <form ng-submit="addComment()" class="flex-grow">
+                <textarea ng-model="commentData.text" rows="3" required placeholder="What are your thoughts?"
+                    class="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-shadow mb-3 resize-none"></textarea>
+                <div class="flex justify-end">
+                    <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-full text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500">
+                        Respond
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div ng-if="!isAuthenticated" class="mb-10 p-4 bg-gray-50 rounded-lg border border-gray-200 flex items-center justify-between">
+            <p class="text-gray-600 text-sm">Sign in to join the conversation.</p>
+            <a href="#!/login" class="text-brand-600 font-medium hover:underline text-sm">Login</a>
+        </div>
+
+        <!-- Comments List -->
+        <div class="space-y-6">
+            <div ng-repeat="comment in comments" class="flex gap-4">
+                <div class="h-10 w-10 shrink-0 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-bold text-sm">
+                    {{ comment.user.name.charAt(0).toUpperCase() }}
+                </div>
+                <div class="flex-grow bg-gray-50 rounded-xl p-4 border border-gray-100 relative group">
+                    <div class="flex items-center justify-between mb-2">
+                        <h4 class="font-medium text-gray-900 text-sm">{{ comment.user.name }}</h4>
+                        <span class="text-xs text-gray-500">{{ comment.createdAt | date:'short' }}</span>
+                    </div>
+                    <p class="text-gray-700 text-sm whitespace-pre-wrap">{{ comment.text }}</p>
+                    
+                    <button ng-if="currentUser && currentUser._id === comment.user._id" ng-click="deleteComment(comment._id)" 
+                        class="absolute -top-2 -right-2 bg-white rounded-full p-1.5 shadow border border-gray-200 text-red-500 hover:text-white hover:bg-red-500 opacity-0 group-hover:opacity-100 transition-all">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div ng-if="comments.length === 0" class="text-center py-6 text-gray-500 text-sm">
+                No responses yet. Be the first to share your thoughts!
+            </div>
+        </div>
+    </div>
+</div>

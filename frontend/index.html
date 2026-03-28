@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="blogApp">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Full-Stack MERN Blog</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- AngularJS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.min.js"></script>
+
+    <style>
+        [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+            display: none !important;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans min-h-screen flex flex-col antialiased">
+
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50" ng-controller="NavController">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="#!/" class="flex-shrink-0 flex items-center gap-2">
+                        <svg class="h-8 w-8 text-brand-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                        <span class="font-bold text-xl text-gray-900 tracking-tight">MediumClone</span>
+                    </a>
+                </div>
+                <div class="flex items-center gap-4">
+                    <a href="#!/" class="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors">Home</a>
+                    
+                    <!-- Guest Links -->
+                    <div ng-if="!isLoggedIn()" class="flex items-center gap-2">
+                        <a href="#!/login" class="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors">Login</a>
+                        <a href="#!/register" class="bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-full text-sm font-medium transition-all shadow-sm hover:shadow">Sign up</a>
+                    </div>
+
+                    <!-- Auth Links -->
+                    <div ng-if="isLoggedIn()" class="flex items-center gap-2">
+                        <a href="#!/dashboard" class="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors">Dashboard</a>
+                        <a href="#!/create-blog" class="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-1">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                            Write
+                        </a>
+                        <button ng-click="logout($event)" class="text-red-500 hover:text-red-700 px-3 py-2 rounded-md text-sm font-medium transition-colors">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8" ng-view></main>
+
+    <footer class="bg-white border-t border-gray-200 mt-auto">
+        <div class="max-w-6xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+            <p class="text-center text-sm text-gray-500">&copy; 2026 MERN Blog Built with AngularJS & Tailwind Setup</p>
+        </div>
+    </footer>
+
+    <!-- App Scripts -->
+    <script src="app.js"></script>
+    <script src="services/authService.js"></script>
+    <script src="services/blogService.js"></script>
+    <script src="controllers/homeController.js"></script>
+    <script src="controllers/authController.js"></script>
+    <script src="controllers/dashboardController.js"></script>
+    <script src="controllers/createBlogController.js"></script>
+    <script src="controllers/blogDetailController.js"></script>
+</body>
+</html>

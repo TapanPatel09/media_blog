@@ -1,0 +1,44 @@
+<div ng-if="post">
+    <h2>{{post.title}}</h2>
+    <div class="meta">By <strong>{{post.author.username}}</strong> &bull; {{post.createdAt | date:'medium'}}</div>
+    <p style="white-space: pre-wrap; line-height: 1.8; font-size: 16px;">{{post.content}}</p>
+
+    <div style="margin-top:30px; display: flex; align-items: center; gap: 15px;">
+        <button ng-if="currentUser" class="btn" ng-click="toggleLike()">
+            <span ng-if="hasLiked()">Unlike</span>
+            <span ng-if="!hasLiked()">Like</span> 
+            ({{post.likes.length}})
+        </button>
+        <span class="meta" ng-if="!currentUser" style="margin: 0;">Likes: {{post.likes.length}}</span>
+        <button class="btn btn-danger btn-outline" ng-if="isAuthor()" ng-click="deletePost(post._id)">Delete Post</button>
+    </div>
+
+    <!-- Comments Section -->
+    <hr style="margin-top: 50px; border: 0; border-top: 1px solid var(--border);">
+    <h3 style="margin-bottom: 25px;">Comments ({{comments.length}})</h3>
+
+    <div ng-if="currentUser" class="form-group" style="margin-bottom: 30px;">
+        <form ng-submit="addComment()">
+            <textarea rows="3" ng-model="newComment" placeholder="Write a comment..." required></textarea>
+            <button type="submit" class="btn">Post Comment</button>
+        </form>
+    </div>
+    
+    <div ng-if="!currentUser" style="margin-bottom: 30px; background: rgba(79, 70, 229, 0.05); padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary);">
+        <p style="margin: 0;"><a href="#!/login" style="color: var(--primary); font-weight: 600; text-decoration: none;">Login</a> to join the conversation.</p>
+    </div>
+
+    <div class="comment-box" ng-repeat="comment in comments">
+        <div class="meta"><strong>{{comment.author.username}}</strong> &bull; {{comment.createdAt | date:'short'}}</div>
+        <p style="margin-bottom: 12px; font-size: 15px;">{{comment.content}}</p>
+        
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <button ng-if="currentUser" class="btn btn-outline like-btn" ng-click="toggleCommentLike(comment)">
+                {{hasCommentLiked(comment) ? 'Unlike' : 'Like'}} ({{comment.likes ? comment.likes.length : 0}})
+            </button>
+            <span class="meta" ng-if="!currentUser" style="margin: 0; font-size: 13px;">Likes: {{comment.likes ? comment.likes.length : 0}}</span>
+            
+            <button class="btn btn-danger like-btn" ng-if="isCommentAuthor(comment)" ng-click="deleteComment(comment._id)">Delete</button>
+        </div>
+    </div>
+</div>

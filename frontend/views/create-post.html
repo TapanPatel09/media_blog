@@ -1,0 +1,13 @@
+<h2>Create New Post</h2>
+<div class="error" ng-if="error">{{error}}</div>
+<form ng-submit="create()">
+    <div>
+        <label>Title</label>
+        <input type="text" ng-model="post.title" required>
+    </div>
+    <div>
+        <label>Content</label>
+        <textarea rows="15" ng-model="post.content" required></textarea>
+    </div>
+    <button type="submit" class="btn">Publish</button>
+</form>
