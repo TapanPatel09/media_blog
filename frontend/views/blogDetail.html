@@ -26,6 +26,18 @@
                 </div>
             </div>
 
+            <!-- Media Content -->
+            <div ng-if="blog.photoUrl" class="mb-8 rounded-xl overflow-hidden shadow-sm border border-gray-100">
+                <img ng-src="http://localhost:5000{{blog.photoUrl}}" alt="Blog Cover" class="w-full h-auto object-cover max-h-[500px]">
+            </div>
+            
+            <div ng-if="blog.videoUrl" class="mb-8 rounded-xl overflow-hidden shadow-sm border border-gray-100 bg-black">
+                <video controls class="w-full h-auto max-h-[500px]">
+                    <source ng-src="http://localhost:5000{{blog.videoUrl}}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+
             <!-- Blog Content -->
             <div class="prose max-w-none text-gray-800 text-lg leading-relaxed whitespace-pre-wrap font-serif">
                 {{ blog.content }}

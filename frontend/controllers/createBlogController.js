@@ -17,14 +17,28 @@ angular.module('blogApp').controller('CreateBlogController', ['$scope', 'BlogSer
     }
 
     $scope.submitForm = function() {
+        var formData = new FormData();
+        formData.append('title', $scope.blog.title);
+        formData.append('content', $scope.blog.content);
+        
+        var photoInput = document.getElementById('photoInput');
+        if (photoInput && photoInput.files.length > 0) {
+            formData.append('photo', photoInput.files[0]);
+        }
+        
+        var videoInput = document.getElementById('videoInput');
+        if (videoInput && videoInput.files.length > 0) {
+            formData.append('video', videoInput.files[0]);
+        }
+
         if ($scope.isEditing) {
-            BlogService.updateBlog($routeParams.id, $scope.blog).then(function() {
+            BlogService.updateBlogWithMedia($routeParams.id, formData).then(function() {
                 $location.path('/dashboard');
             }).catch(function(err) {
                 $scope.error = err.data.message || 'Failed to update blog';
             });
         } else {
-            BlogService.createBlog($scope.blog).then(function() {
+            BlogService.createBlogWithMedia(formData).then(function() {
                 $location.path('/dashboard');
             }).catch(function(err) {
                 $scope.error = err.data.message || 'Failed to create blog';

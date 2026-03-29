@@ -1,0 +1,87 @@
+# Add Photo and Video Upload to Blogs
+
+This plan outlines the addition of media upload capabilities (photos and videos) during blog creation and editing. It involves using `multer` for backend file handling, storing media files locally with strict size and type limits, and updating the database schema, controllers, frontend views, and angular services to support `multipart/form-data`.
+
+## User Review Required
+
+> [!IMPORTANT]
+> - I will set reasonable local file upload size constraints: **5 MB for photos** and **20 MB for videos**. Let me know if you would prefer different limits.
+> - Uploaded files will be stored locally in the `backend/uploads` directory. This is fine for development but for true production, a service like Cloudinary or AWS S3 is recommended. We will use local uploads for now.
+> - The files will be stored using their original names plus a timestamp, and their static paths will be saved in the MongoDB `Blog` document.
+
+## Proposed Changes
+
+### Backend Infrastructure & Setup
+We will install `multer` and serve the uploads directory statically.
+
+#### [MODIFY] backend/package.json
+- Add `multer` to dependencies (we will run `npm install multer` in the backend).
+
+#### [MODIFY] backend/server.js
+- Add logic to serve the `uploads` directory statically using `express.static()`.
+
+#### [NEW] backend/middleware/uploadMiddleware.js
+- Create a `multer` configuration instance to handle multipart forms.
+- Set up a disk storage engine pointing to a `backend/uploads/` directory.
+- Apply file filtering to allow only image types (jpg, jpeg, png, etc.) for photos and video types (mp4, webm, etc.) for videos.
+- Enforce size limits: 5MB for images, 20MB for videos.
+
+---
+
+### Database Update
+We need a place to store references to the uploaded files.
+
+#### [MODIFY] backend/models/Blog.js
+- Add `photoUrl` (type: String) field.
+- Add `videoUrl` (type: String) field.
+
+---
+
+### API Routing & Controllers
+We will update our routes and controller logic to handle the fields provided by the upload middleware.
+
+#### [MODIFY] backend/routes/blogRoutes.js
+- Import the new `uploadMiddleware`.
+- Insert the middleware into the POST `/` (create) and PUT `/:id` (update) routes using `upload.fields([{name: 'photo'}, {name: 'video'}])`.
+
+#### [MODIFY] backend/controllers/blogController.js
+- Update `createBlog`: parse `req.files` to extract the photo and video paths. Construct their public URLs and insert them into the database alongside title and content.
+- Update `updateBlog`: similar to above, parse `req.files` and update the database with new media paths if provided by the user.
+
+---
+
+### Frontend Services & Logic
+AngularJS requires a specific `Content-Type` and data transformation to upload `FormData`.
+
+#### [MODIFY] frontend/services/blogService.js
+- Update `createBlog` and `updateBlog` functions to handle `FormData` properly using `$http.post/put`.
+- Ensure headers are set to `{'Content-Type': undefined}` and `transformRequest: angular.identity` so the browser can accurately build the multipart boundaries.
+
+#### [MODIFY] frontend/controllers/createBlogController.js
+- Add logic to capture file inputs using a custom directive or by listening to file `onchange` events.
+- Update the submit logic to append title, content, and the actual file objects to a `FormData` payload.
+
+---
+
+### Frontend Views
+We need to present file upload dialogues and display the uploaded files.
+
+#### [MODIFY] frontend/views/createBlog.html
+- Add input elements of type `file` for both Photo (accept="image/*") and Video (accept="video/*").
+- Update the UI to show the selected filenames.
+
+#### [MODIFY] frontend/views/blogDetail.html
+- Add an `<img>` tag wrapped in a nice container to display the `photoUrl` if present.
+- Add a `<video>` tag with controls to display the `videoUrl` if present.
+
+## Verification Plan
+
+### Automated Tests
+- N/A
+
+### Manual Verification
+1. I will boot up both the frontend and backend servers.
+2. I will log in and navigate to the "Write a new blog" page.
+3. I will upload a dummy photo and a dummy video along with text content, verifying that the files save correctly on disk (`backend/uploads`), and that paths save to MongoDB.
+4. I will view the new blog post and ensure the media renders nicely.
+5. I will test editing the blog and verify updating media logic works seamlessly safely.

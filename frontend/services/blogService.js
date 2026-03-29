@@ -12,8 +12,20 @@ angular.module('blogApp').factory('BlogService', ['$http', function($http) {
         createBlog: function(blogData) {
             return $http.post(API_URL, blogData);
         },
+        createBlogWithMedia: function(formData) {
+            return $http.post(API_URL, formData, {
+                transformRequest: angular.identity,
+                headers: { 'Content-Type': undefined }
+            });
+        },
         updateBlog: function(id, blogData) {
             return $http.put(API_URL + id, blogData);
+        },
+        updateBlogWithMedia: function(id, formData) {
+            return $http.put(API_URL + id, formData, {
+                transformRequest: angular.identity,
+                headers: { 'Content-Type': undefined }
+            });
         },
         deleteBlog: function(id) {
             return $http.delete(API_URL + id);

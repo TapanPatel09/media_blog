@@ -1,6 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
+const path = require('path');
 const connectDB = require('./config/db');
 
 // Load env vars
@@ -13,6 +14,9 @@ const app = express();
 
 // Body parser
 app.use(express.json());
+
+// Serve static files from the uploads directory
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Enable CORS
 app.use(cors());

@@ -52,10 +52,24 @@ const createBlog = async (req, res) => {
             return res.status(400).json({ message: 'Please add a text and content field' });
         }
 
+        let photoUrl = '';
+        let videoUrl = '';
+
+        if (req.files) {
+            if (req.files.photo && req.files.photo.length > 0) {
+                photoUrl = '/uploads/' + req.files.photo[0].filename;
+            }
+            if (req.files.video && req.files.video.length > 0) {
+                videoUrl = '/uploads/' + req.files.video[0].filename;
+            }
+        }
+
         const blog = await Blog.create({
             title: req.body.title,
             content: req.body.content,
-            author: req.user.id
+            author: req.user.id,
+            photoUrl,
+            videoUrl
         });
 
         res.status(201).json(blog);
@@ -80,7 +94,18 @@ const updateBlog = async (req, res) => {
             return res.status(401).json({ message: 'User not authorized to update this blog' });
         }
 
-        const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, req.body, {
+        let updateData = { ...req.body };
+
+        if (req.files) {
+            if (req.files.photo && req.files.photo.length > 0) {
+                updateData.photoUrl = '/uploads/' + req.files.photo[0].filename;
+            }
+            if (req.files.video && req.files.video.length > 0) {
+                updateData.videoUrl = '/uploads/' + req.files.video[0].filename;
+            }
+        }
+
+        const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, updateData, {
             new: true,
         });
 
